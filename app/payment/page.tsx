@@ -1,16 +1,31 @@
 "use client";
 
 import { BundleI, NetworkProviderI, bundles, networkProvider } from "@/data";
+import { Provider, ethers } from "ethers";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+import Spinner from "../components/Spinner";
+import { useConnect } from "wagmi";
+import { CeloContract, newKitFromWeb3 } from "@celo/contractkit";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import Web3 from "web3";
+import TooltipComponent from "./TooltipComponent";
+import { APIURL } from "@/data/apiUrl";
 
 const MakePaymentPage = () => {
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkProviderI>();
   const [selectedBundle, setSelectedBundle] = useState<BundleI>();
+  const [provider, setProvider] = useState<Provider>();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [success, setSuccess] = useState(false);
+
+  const router = useRouter();
 
   const { status, data: session } = useSession();
 
@@ -20,6 +35,10 @@ const MakePaymentPage = () => {
   const bundle = searchParams.get("bundle");
   const phone = searchParams.get("phone");
 
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
+
   useEffect(() => {
     setSelectedNetwork(
       networkProvider.find((wantedNetwork) => wantedNetwork.name === network)
@@ -28,7 +47,64 @@ const MakePaymentPage = () => {
     setSelectedBundle(
       bundles.find((wantedBundle) => wantedBundle.id == Number(bundle))
     );
+
+    connect();
   }, []);
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+
+      const web3 = new Web3(window.ethereum);
+      const kit = newKitFromWeb3(web3 as any);
+
+      const parsedAmount = await ethers.parseEther(
+        selectedBundle!.inUsd.toString()
+      );
+
+      const amount_ = parsedAmount.toString();
+
+      let accounts = await kit.web3.eth.getAccounts();
+      kit.defaultAccount = accounts[0];
+
+      await kit.setFeeCurrency(CeloContract.StableToken);
+
+      let cUSDcontract = await kit.contracts.getStableToken();
+      let cUSDtx = await cUSDcontract
+        .transfer("0xD2c2591162162Fc57a40bc8a3C9cff0E6dFc9824", amount_)
+        .send({ feeCurrency: cUSDcontract.address });
+
+      let resultTx = await cUSDtx.waitReceipt();
+
+      if (resultTx.transactionHash) {
+        const res = await fetch(`${APIURL}/one-pushId`, {
+          method: "POST",
+          body: JSON.stringify({
+            user: session?.user?.name,
+            msg: `Shuku 🚀, your ${selectedBundle?.amount} ${selectedBundle?.size} data order was delivered to ${phone}. Payment processed in cUSD. Enjoy! `,
+            name: "INFO",
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        await res.json();
+
+        setSuccess(false);
+
+        // return;
+      } else {
+        // Return error
+        setError("Transaction failed!");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/");
+    } catch (error) {
+      setLoading(false);
+      setError("Transaction failed!");
+    }
+  };
 
   return (
     <main className="h-screen w-full  flex flex-col p-5">
@@ -91,16 +167,33 @@ const MakePaymentPage = () => {
         </div>
       </div>
 
+      {error && <TooltipComponent tipType="red" message={error} />}
+
+      {success && (
+        <TooltipComponent
+          tipType="green"
+          message="🎉 Your purchase was successfull"
+        />
+      )}
+
       <div className="flex flex-col gap-3">
-        <button className="w-full p-3 font-medium bg-yellow-400 rounded-full text-xs">
-          CONFIRM
+        <button
+          disabled={loading}
+          onClick={handleSubmit}
+          className={`w-full p-3 font-medium ${
+            loading ? "bg-neutral-100 text-white" : "bg-yellow-400"
+          }  rounded-full text-xs flex items-center justify-center`}
+        >
+          {loading ? <Spinner /> : "CONFIRM"}
         </button>
 
-        <Link href="/">
-          <button className="w-full p-3 font-medium text-yellow-400 rounded-full text-xs">
-            Cancel
-          </button>
-        </Link>
+        {!loading && (
+          <Link href="/">
+            <button className="w-full p-3 font-medium text-yellow-400 rounded-full text-xs">
+              Cancel
+            </button>
+          </Link>
+        )}
       </div>
     </main>
   );

@@ -17,9 +17,7 @@ const BundleCard = ({
 
   const handleSubmit = (selected: BundleI) => {
     setSelectedBundle(selected);
-    router.push(
-      `/phone?network=${selectedNetwork.name}&bundle=${selectedBundle.id}`
-    );
+    router.push(`/phone?network=${selectedNetwork.name}&bundle=${selected.id}`);
   };
 
   return (

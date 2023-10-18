@@ -3,6 +3,7 @@ export interface BundleI {
   amount: number;
   size: string;
   price: number;
+  inUsd: number;
 }
 
 export const bundles: BundleI[] = [
@@ -11,24 +12,28 @@ export const bundles: BundleI[] = [
     amount: 70,
     size: "MB",
     price: 500,
+    inUsd: 0.13,
   },
   {
     id: 2,
     amount: 160,
     size: "MB",
     price: 1000,
+    inUsd: 0.27,
   },
   {
     id: 3,
     amount: 500,
     size: "MB",
     price: 2000,
+    inUsd: 0.53,
   },
   {
     id: 4,
     amount: 2,
     size: "GB",
     price: 5000,
+    inUsd: 1.34,
   },
 ];
 
