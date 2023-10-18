@@ -1,20 +1,18 @@
 "use client";
 
 import { BundleI, NetworkProviderI, bundles, networkProvider } from "@/data";
+import { APIURL } from "@/data/apiUrl";
+import { CeloContract, newKitFromWeb3 } from "@celo/contractkit";
 import { Provider, ethers } from "ethers";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
-import Spinner from "../components/Spinner";
-import { useConnect } from "wagmi";
-import { CeloContract, newKitFromWeb3 } from "@celo/contractkit";
-import { InjectedConnector } from "wagmi/connectors/injected";
 import Web3 from "web3";
+import Spinner from "../components/Spinner";
 import TooltipComponent from "./TooltipComponent";
-import { APIURL } from "@/data/apiUrl";
 
 const MakePaymentPage = () => {
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkProviderI>();
@@ -35,10 +33,6 @@ const MakePaymentPage = () => {
   const bundle = searchParams.get("bundle");
   const phone = searchParams.get("phone");
 
-  const { connect } = useConnect({
-    connector: new InjectedConnector(),
-  });
-
   useEffect(() => {
     setSelectedNetwork(
       networkProvider.find((wantedNetwork) => wantedNetwork.name === network)
@@ -47,8 +41,6 @@ const MakePaymentPage = () => {
     setSelectedBundle(
       bundles.find((wantedBundle) => wantedBundle.id == Number(bundle))
     );
-
-    connect();
   }, []);
 
   const handleSubmit = async () => {
