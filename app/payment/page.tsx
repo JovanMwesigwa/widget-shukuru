@@ -62,6 +62,7 @@ const MakePaymentPage = () => {
       await kit.setFeeCurrency(CeloContract.StableToken);
 
       let cUSDcontract = await kit.contracts.getStableToken();
+
       let cUSDtx = await cUSDcontract
         .transfer("0xD2c2591162162Fc57a40bc8a3C9cff0E6dFc9824", amount_)
         .send({ feeCurrency: cUSDcontract.address });

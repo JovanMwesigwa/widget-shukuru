@@ -8,7 +8,8 @@ const PaymentLayout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Ensure MiniPay provider is available
-    if (window.ethereum && window.ethereum.isMiniPay) {
+    // if (window.ethereum && window.ethereum.isMiniPay) {
+    if (window.ethereum) {
       // const provider = new ethers.providers.Web3Provider(window.ethereum);
       const provider = new ethers.BrowserProvider(window.ethereum);
 
