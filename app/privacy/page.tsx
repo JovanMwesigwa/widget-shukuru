@@ -11,11 +11,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { FaArrowRight } from "react-icons/fa";
 
 import React, { useState } from "react";
 import Image from "next/image";
 import { APIURL } from "@/data/apiUrl";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 const PrivacyPage = () => {
   const [loading, setLoading] = useState(false);
@@ -64,8 +66,22 @@ const PrivacyPage = () => {
   if (status !== "authenticated") {
     // Redirect to home page using next router
     return (
-      <div className="flex flex-1">
-        <h1>Not logged in</h1>
+      <div className="flex flex-1 h-screen flex-col">
+        <div className="flex items-center justify-between w-full py-4">
+          <h1 className="text-sm font-bold md:text-xl">
+            Login to access your Account data
+          </h1>
+          <Image src="/logo.png" width={40} height={40} alt="Shukuru" />
+        </div>
+
+        <div className="flex p-24 items-center justify-center w-full ">
+          <Link
+            href="/auth/signin"
+            className="bg-yellow-400 p-3 w-1/3 gap-3 rounded-full items-center justify-center flex font-bold"
+          >
+            Go to log In <FaArrowRight />
+          </Link>
+        </div>
       </div>
     );
   }

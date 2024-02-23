@@ -11,6 +11,8 @@ const SignInPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const callbackUrl = "/privacy";
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -26,7 +28,7 @@ const SignInPage = () => {
         username,
         password,
         redirect: true,
-        callbackUrl: "/",
+        callbackUrl: callbackUrl,
       });
     } catch (error) {
       setLoading(false);
