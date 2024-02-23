@@ -56,7 +56,7 @@ const PrivacyPage = () => {
         },
       });
       // Redirect to home page
-      window.location.href = "/";
+      router.push("/auth/signin");
     } catch (error) {
       setLoading(false);
       setError("Something went wrong");
@@ -65,7 +65,7 @@ const PrivacyPage = () => {
 
   if (status !== "authenticated") {
     // Redirect to home page using next router
-    router.push("/");
+    router.push("/auth/signin");
   }
 
   return (
