@@ -16,13 +16,12 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { APIURL } from "@/data/apiUrl";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 const PrivacyPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const router = useRouter();
+  // const router = useRouter();
 
   const notifications = [
     {
@@ -56,7 +55,6 @@ const PrivacyPage = () => {
         },
       });
       // Redirect to home page
-      router.push("/auth/signin");
     } catch (error) {
       setLoading(false);
       setError("Something went wrong");
@@ -65,7 +63,11 @@ const PrivacyPage = () => {
 
   if (status !== "authenticated") {
     // Redirect to home page using next router
-    router.push("/auth/signin");
+    return (
+      <div className="flex flex-1">
+        <h1>Not logged in</h1>
+      </div>
+    );
   }
 
   return (
