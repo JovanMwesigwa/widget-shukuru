@@ -37,27 +37,27 @@ const SignInPage = () => {
   return (
     <form
       onSubmit={(e) => handleSubmit(e)}
-      className="h-screen flex flex-col p-5 items-center  overflow-auto"
+      className="flex flex-col items-center h-screen p-5 overflow-auto"
     >
       <Image src="/logo.png" width={60} height={60} alt="Logo" />
 
-      <div className="w-full flex flex-col my-6">
-        <p className="text-sm my-2 font-bold">Username</p>
+      <div className="flex flex-col w-full my-6">
+        <p className="my-2 text-sm font-bold">Username</p>
         <input
           placeholder="Enter your username"
           type="text"
-          className="border p-3 rounded-md outline-none"
+          className="p-3 border rounded-md outline-none"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
 
-      <div className="w-full flex flex-col">
-        <p className="text-sm my-2 font-bold">Password</p>
+      <div className="flex flex-col w-full">
+        <p className="my-2 text-sm font-bold">Password</p>
         <input
           placeholder="Enter your password"
           type="password"
-          className="border p-3 rounded-md outline-none"
+          className="p-3 border rounded-md outline-none"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
